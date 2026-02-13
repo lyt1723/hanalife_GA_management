@@ -1,0 +1,77 @@
+﻿<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>하나생명 GA 업무지원</title>
+    <style>
+        :root { --hana-teal: #008485; }
+        body { font-family: 'Malgun Gothic', 'Apple SD Gothic Neo', sans-serif; background-color: #f5f8f8; margin: 0; display: flex; flex-direction: column; align-items: center; padding: 20px; }
+        
+        /* 메인 컨테이너 */
+        .container { width: 100%; max-width: 480px; text-align: center; background: white; padding: 40px 20px; border-radius: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); margin-top: 20px; }
+        
+        /* 상단 제목: 가시성 강화 */
+        h1 { color: #222; font-size: 1.8rem; font-weight: 800; margin-bottom: 8px; letter-spacing: -1px; }
+        .sub-title { color: var(--hana-teal); font-size: 1rem; font-weight: bold; margin-bottom: 35px; }
+        
+        /* 버튼 그리드: 간격 넓힘 */
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; } /* gap을 20px로 확대 */
+        
+        /* 버튼 디자인 */
+        .btn { 
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            background: #fff; border: 2px solid var(--hana-teal); color: #333;
+            padding: 22px 10px; border-radius: 18px; text-decoration: none;
+            transition: all 0.2s ease; box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+        }
+        
+        /* 버튼 클릭 효과 */
+        .btn:active { background: var(--hana-teal); color: #fff; transform: scale(0.95); }
+        .btn:active .time { color: #eee; }
+
+        /* 매니저 이름 */
+        .name { font-size: 1.2rem; font-weight: bold; margin-bottom: 6px; }
+        
+        /* 업무 시간 */
+        .time { font-size: 0.75rem; color: #888; font-weight: normal; }
+        
+        .footer { margin-top: 40px; font-size: 0.8rem; color: #bbb; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>하나생명 GA 업무지원</h1>
+        <div class="sub-title">실시간 1:1 카카오톡 상담</div>
+        
+        <div class="grid">
+            <a href="https://open.kakao.com/..." class="btn">
+                <div class="name">김하나 매니저</div>
+                <div class="time">09:00 ~ 17:00</div>
+            </a>
+            <a href="https://open.kakao.com/..." class="btn">
+                <div class="name">이두나 매니저</div>
+                <div class="time">09:00 ~ 17:00</div>
+            </a>
+            <a href="https://open.kakao.com/..." class="btn">
+                <div class="name">박세나 매니저</div>
+                <div class="time">09:00 ~ 17:00</div>
+            </a>
+            <a href="https://open.kakao.com/..." class="btn">
+                <div class="name">최네나 매니저</div>
+                <div class="time">09:00 ~ 17:00</div>
+            </a>
+            <a href="https://open.kakao.com/..." class="btn">
+                <div class="name">정다나 매니저</div>
+                <div class="time">09:00 ~ 17:00</div>
+            </a>
+            <a href="https://open.kakao.com/..." class="btn">
+                <div class="name">조아라 매니저</div>
+                <div class="time">09:00 ~ 17:00</div>
+            </a>
+        </div>
+        
+        <div class="footer">© HANA LIFE GA SUPPORT</div>
+    </div>
+</body>
+</html>
