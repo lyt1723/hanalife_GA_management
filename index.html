@@ -8,8 +8,11 @@
         :root { --hana-teal: #008485; }
         body { font-family: 'Malgun Gothic', 'Apple SD Gothic Neo', sans-serif; background-color: #f2f5f5; margin: 0; display: flex; flex-direction: column; align-items: center; padding: 20px; }
         .container { width: 100%; max-width: 500px; text-align: center; background: white; padding: 45px 15px; border-radius: 30px; box-shadow: 0 15px 35px rgba(0,0,0,0.1); margin-top: 20px; box-sizing: border-box; }
+        
         h1 { color: #111; font-size: 2.5rem; font-weight: 900; margin-bottom: 12px; letter-spacing: -1.2px; white-space: nowrap; word-break: keep-all; line-height: 1.2; }
-        .sub-title { color: var(--hana-teal); font-size: 0.9rem; font-weight: bold; margin-bottom: 35px; opacity: 0.9; }
+        .sub-title { color: var(--hana-teal); font-size: 0.9rem; font-weight: bold; margin-bottom: 35px; opacity: 0.9; line-height: 1.5; }
+        .sub-title br { display: none; }
+
         .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; } 
         .btn { 
             display: flex; flex-direction: column; align-items: center; justify-content: center;
@@ -20,15 +23,23 @@
         }
         .btn:hover { background: #f9ffff; }
         .btn:active { background: var(--hana-teal); color: #fff; transform: scale(0.94); }
-        .name { font-size: 1.15rem; font-weight: 800; margin-bottom: 6px; pointer-events: none; }
+        .name { font-size: 1.15rem; font-weight: 800; margin-bottom: 6px; pointer-events: none; white-space: nowrap; }
         .time { font-size: 0.75rem; color: #777; pointer-events: none; }
         .footer { margin-top: 45px; font-size: 0.8rem; color: #ccc; font-weight: bold; }
+
+        @media screen and (max-width: 480px) {
+            h1 { font-size: 1.8rem; }
+            .sub-title { font-size: 0.85rem; }
+            .sub-title br { display: block; }
+            .name { font-size: 0.95rem; }
+            .container { padding: 35px 20px; }
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>하나생명 GA 업무지원</h1>
-        <div class="sub-title">설계매니저를 선택하시면 카카오톡으로 연결됩니다.</div>
+        <div class="sub-title">설계매니저를 선택하시면<br>카카오톡으로 연결됩니다.</div>
         <div id="manager-grid" class="grid"></div>
         <div class="footer">© 하나생명보험</div>
     </div>
@@ -44,7 +55,7 @@
 
         const today = new Date();
         const firstDay = new Date('2026-02-19');
-        const diffDays = Math.floor((today - firstDay) / (86400000));
+        const diffDays = Math.floor((today - firstDay) / 86400000);
         
         let shift = diffDays % managers.length;
         if (shift < 0) shift += managers.length; 
@@ -74,7 +85,16 @@
                 }
 
                 if (isMobile) {
-                    location.href = `kakaotalk://pgp/profiles/${m.id}`;
+                    const scheme = `kakaotalk://pgp/profiles/${m.id}`;
+                    const webLink = `https://qr.kakao.com/talk/${m.id}`;
+                    
+                    location.href = scheme;
+                    
+                    setTimeout(() => {
+                        if (document.hasFocus()) {
+                            location.href = webLink;
+                        }
+                    }, 500);
                 } else {
                     copyToClipboard(m.phone);
                     alert(`${m.name} 설계매니저의 연락처가 복사 되었습니다.\n카카오톡에서 친구추가 후 연락 바랍니다.\n\n\n해당 사이트는 모바일 환경에서 사용하시는 것을 권장 드립니다.`);
