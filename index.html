@@ -25,7 +25,21 @@
         .btn:active { background: var(--hana-teal); color: #fff; transform: scale(0.94); }
         .name { font-size: 1.15rem; font-weight: 800; margin-bottom: 6px; pointer-events: none; white-space: nowrap; }
         .time { font-size: 0.75rem; color: #777; pointer-events: none; }
-        .footer { margin-top: 45px; font-size: 0.8rem; color: #ccc; font-weight: bold; }
+
+        /* 가이드 박스: 기본적으로 숨김 (JS에서 PC일 때만 표시) */
+        #pc-guide { 
+            display: none;
+            margin-top: 40px; padding: 20px; background-color: #f9fbfb; 
+            border-radius: 20px; border: 1px dashed var(--hana-teal);
+            text-align: left;
+        }
+        .guide-title { font-size: 0.95rem; font-weight: 800; color: var(--hana-teal); margin-bottom: 10px; display: block; }
+        .guide-text { font-size: 0.82rem; color: #555; line-height: 1.7; margin: 0; padding: 0; list-style: none; }
+        .guide-text li { margin-bottom: 4px; position: relative; padding-left: 15px; }
+        .guide-text li::before { content: '•'; position: absolute; left: 0; color: var(--hana-teal); }
+        .guide-note { font-size: 0.75rem; color: #999; margin-top: 12px; display: block; border-top: 1px dotted #eee; padding-top: 10px; }
+
+        .footer { margin-top: 30px; font-size: 0.8rem; color: #ccc; font-weight: bold; }
 
         @media screen and (max-width: 480px) {
             h1 { font-size: 1.8rem; }
@@ -40,7 +54,20 @@
     <div class="container">
         <h1>하나생명 GA 업무지원</h1>
         <div class="sub-title">설계매니저를 선택하시면 <br>카카오톡으로 연결됩니다.</div>
+        
         <div id="manager-grid" class="grid"></div>
+
+        <div id="pc-guide">
+            <span class="guide-title">✅ PC 카카오톡 친구 추가 방법</span>
+            <ul class="guide-text">
+                <li>1. 실행된 PC카톡에서 <b>우측 상단의 [친구 추가]</b> 아이콘 클릭</li>
+                <li><b>2. [연락처로 추가]</b> 메뉴 선택</li>
+                <li>3. 이름 입력 후, 번호칸에 <b>Ctrl + V</b> (붙여넣기)</li>
+            </ul>
+            <span class="guide-note">※ 매니저 클릭 시 번호가 자동으로 복사됩니다.<br>
+                💡 <b>모바일</b>로 접속하시면 바로 연결되어 더욱 편리합니다.</span>
+        </div>
+
         <div class="footer">© 하나생명보험</div>
     </div>
 
@@ -66,6 +93,11 @@
         const currentHour = today.getHours();
         const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
 
+        // PC일 때만 가이드 박스 표시
+        if (!isMobile) {
+            document.getElementById('pc-guide').style.display = 'block';
+        }
+
         function copyToClipboard(val) {
             const t = document.createElement("textarea");
             document.body.appendChild(t);
@@ -88,9 +120,7 @@
                 if (isMobile) {
                     const scheme = `kakaotalk://pgp/profiles/${m.id}`;
                     const webLink = `https://qr.kakao.com/talk/${m.id}`;
-                    
                     location.href = scheme;
-                    
                     setTimeout(() => {
                         if (document.hasFocus()) {
                             location.href = webLink;
@@ -98,7 +128,7 @@
                     }, 500);
                 } else {
                     copyToClipboard(m.phone);
-                    alert(`${m.name} 설계매니저의 연락처가 복사되었습니다.\n카카오톡에서 친구추가 후 연락 바랍니다.\n\n\n해당 사이트는 모바일 환경에 최적화 되어있습니다.\n모바일에서 사용하시는 것을 권장 드립니다.`);
+                    alert(`${m.name} 설계매니저의 연락처가 복사되었습니다.\n\n하단의 가이드에 따라 친구 추가 후 연락 바랍니다.`);
                     location.href = `kakaotalk://`;
                 }
             };
@@ -107,5 +137,3 @@
     </script>
 </body>
 </html>
-
-
