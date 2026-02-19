@@ -62,25 +62,20 @@
                     alert("긴급한 사안이 아닌 경우 업무시간 내 연락 부탁 드립니다.");
                 }
 
-                // [해결책] PC 홈페이지 이동을 원천 차단하는 실행 방식
-                // kakaotalk://link/ 주소는 PC 카톡 앱을 직접 제어합니다.
-                const pcScheme = `kakaotalk://link/talk/profile/${m.id}`;
-                const mobileLink = `https://qr.kakao.com/talk/${m.id}`;
-
                 const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+                const targetId = m.id;
 
                 if (isMobile) {
-                    location.href = mobileLink;
+                    // 모바일: 기존 검증된 방식
+                    location.href = `https://qr.kakao.com/talk/${targetId}`;
                 } else {
-                    // PC에서 홈페이지로 튕기는 것을 막기 위해 iframe을 사용하거나 직접 호출
-                    // 이 방식은 브라우저 상단에 실행 팝업을 띄우고 홈페이지 리다이렉트를 무시합니다.
-                    const iframe = document.createElement('iframe');
-                    iframe.style.display = 'none';
-                    iframe.src = pcScheme;
-                    document.body.appendChild(iframe);
+                    // PC: 추론된 1:1 채팅방 강제 호출 스킴
+                    // 만약 pcScheme1이 안 되면 pcScheme2로 변수명을 바꿔서 테스트해보세요.
+                    const pcScheme1 = `kakaotalk://talk/chat/friend?userid=${targetId}`;
+                    const pcScheme2 = `kakaotalk://friend/chat/${targetId}`;
                     
-                    // 실행 후 iframe 제거
-                    setTimeout(() => document.body.removeChild(iframe), 1000);
+                    // 우선 가장 유력한 pcScheme1 실행
+                    window.location.href = pcScheme1;
                 }
             };
             grid.appendChild(btn);
@@ -88,3 +83,4 @@
     </script>
 </body>
 </html>
+
