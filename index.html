@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
@@ -11,76 +11,72 @@
         h1 { color: #111; font-size: 2.5rem; font-weight: 900; margin-bottom: 12px; letter-spacing: -1.2px; white-space: nowrap; word-break: keep-all; line-height: 1.2; }
         .sub-title { color: var(--hana-teal); font-size: 0.9rem; font-weight: bold; margin-bottom: 35px; opacity: 0.9; }
         .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; } 
-        
         .btn { 
             display: flex; flex-direction: column; align-items: center; justify-content: center;
             background: #fff; border: 2.2px solid var(--hana-teal); color: #222;
             padding: 22px 5px; border-radius: 20px; text-decoration: none;
             transition: all 0.2s ease; box-shadow: 0 4px 10px rgba(0,132,133,0.05);
-            cursor: pointer; /* 버튼 형태 유지 */
+            cursor: pointer;
         }
-        .btn:hover { background: #f9ffff; }
         .btn:active { background: var(--hana-teal); color: #fff; transform: scale(0.94); }
-        .name { font-size: 1.3rem; font-weight: 800; margin-bottom: 6px; white-space: nowrap; letter-spacing: -0.5px; pointer-events: none; }
-        .time { font-size: 0.75rem; color: #777; font-weight: normal; white-space: nowrap; pointer-events: none; }
+        .name { font-size: 1.3rem; font-weight: 800; margin-bottom: 6px; pointer-events: none; }
+        .time { font-size: 0.75rem; color: #777; pointer-events: none; }
         .footer { margin-top: 45px; font-size: 0.8rem; color: #ccc; font-weight: bold; }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>하나생명 GA 업무지원</h1>
-        <div class="sub-title">설계매니저를 선택하시면 카카오톡 채팅으로 연결됩니다.</div>
-        
+        <div class="sub-title">설계매니저를 선택하시면 카카오톡이 즉시 실행됩니다.</div>
         <div class="grid" id="manager-grid"></div>
-        
         <div class="footer">© 하나생명보험</div>
     </div>
 
     <script>
-    // 1. 매니저 데이터 설정 (기존에 사용하시던 전체 URL을 그대로 link에 넣으시면 됩니다)
-    const managers = [
-        { name: "이연택 매니저", time: "10:00 ~ 18:00", start: 10, end: 18, link: "http://qr.kakao.com/talk/zxKd6qDxlPlmA5hprZN010wasVA-" },
-        { name: "강미현 매니저", time: "10:00 ~ 18:00", start: 10, end: 18, link: "매니저별_개인톡_링크_입력" },
-        { name: "김용주 매니저", time: "09:00 ~ 17:00", start: 9, end: 17, link: "매니저별_개인톡_링크_입력" },
-        { name: "박승현 매니저", time: "09:00 ~ 17:00", start: 9, end: 17, link: "매니저별_개인톡_링크_입력" },
-        { name: "정혜정 매니저", time: "10:00 ~ 18:00", start: 10, end: 18, link: "매니저별_개인톡_링크_입력" },
-        { name: "강선경 매니저", time: "10:00 ~ 18:00", start: 10, end: 18, link: "매니저별_개인톡_링크_입력" }
-    ];
+        // 1. 매니저 데이터 (link에서 ID만 추출해서 사용)
+        const managers = [
+            { name: "이연택 매니저", time: "10:00 ~ 18:00", start: 10, end: 18, id: "zxKd6qDxlPlmA5hprZN010wasVA-" },
+            { name: "강미현 매니저", time: "10:00 ~ 18:00", start: 10, end: 18, id: "매니저ID입력" },
+            { name: "김용주 매니저", time: "09:00 ~ 17:00", start: 9, end: 17, id: "매니저ID입력" },
+            { name: "박승현 매니저", time: "09:00 ~ 17:00", start: 9, end: 17, id: "매니저ID입력" },
+            { name: "정혜정 매니저", time: "10:00 ~ 18:00", start: 10, end: 18, id: "매니저ID입력" },
+            { name: "강선경 매니저", time: "10:00 ~ 18:00", start: 10, end: 18, id: "매니저ID입력" }
+        ];
 
-    // 2. 날짜 기준 로테이션 로직 (매일 한 칸씩 이동)
-    const today = new Date();
-    const dateSeed = Math.floor(today.getTime() / (1000 * 60 * 60 * 24)); 
-    const shift = dateSeed % managers.length;
-    const rotatedManagers = [...managers.slice(shift), ...managers.slice(0, shift)];
+        // 2. 매일 한 칸씩 순서 로테이션 로직
+        const dateSeed = Math.floor(new Date().getTime() / (1000 * 60 * 60 * 24));
+        const shift = dateSeed % managers.length;
+        const rotatedManagers = [...managers.slice(shift), ...managers.slice(0, shift)];
 
-    // 3. 화면에 버튼 생성 및 이벤트 부여
-    const grid = document.getElementById('manager-grid');
-    const currentHour = today.getHours();
+        const grid = document.getElementById('manager-grid');
+        const currentHour = new Date().getHours();
 
-    rotatedManagers.forEach(m => {
-        const btn = document.createElement('div');
-        btn.className = 'btn';
-        btn.innerHTML = `<div class="name">${m.name}</div><div class="time">${m.time}</div>`;
-        
-        btn.onclick = () => {
-            // 업무 시간 체크 (요청사항 3번)
-            if (currentHour < m.start || currentHour >= m.end) {
-                alert("긴급한 사안이 아닌 경우 업무 시간 내 연락 부탁 드립니다.");
-            }
+        rotatedManagers.forEach(m => {
+            const btn = document.createElement('div');
+            btn.className = 'btn';
+            btn.innerHTML = `<div class="name">${m.name}</div><div class="time">${m.time}</div>`;
+            
+            btn.onclick = () => {
+                // 3. 업무 시간 외 경고
+                if (currentHour < m.start || currentHour >= m.end) {
+                    alert("긴급한 사안이 아닌 경우 업무 시간 내 연락 부탁 드립니다.");
+                }
 
-            // PC 및 모바일 대응 접속 로직 (요청사항 1번 해결)
-            // 개인톡(qr.kakao.com)은 PC에서 직접 앱을 호출하기보다 
-            // 아래와 같이 새 창으로 열어 중간 페이지를 거치는 것이 가장 확실하게 앱 실행을 유도합니다.
-            if (m.link && m.link !== "매니저별_개인톡_링크_입력") {
-                window.open(m.link, '_blank');
-            } else {
-                alert("등록된 채팅 링크가 없습니다.");
-            }
-        };
-        
-        grid.appendChild(btn);
-    });
-</script>
+                // 핵심: PC/모바일 공통 카톡 앱 강제 실행 스킴
+                // qr.kakao.com의 뒷자리 ID를 활용해 프로필 팝업을 바로 띄웁니다.
+                const scheme = `kakaotalk://pgp/profiles/${m.id}`;
+                const webFallback = `https://qr.kakao.com/talk/${m.id}`;
+
+                // PC 브라우저에서 스킴 호출
+                location.href = scheme;
+
+                // 앱이 설치되지 않았거나 반응 없을 경우를 대비해 0.5초 후 웹 페이지 이동 (보험용)
+                setTimeout(() => {
+                    window.open(webFallback, '_blank');
+                }, 500);
+            };
+            grid.appendChild(btn);
+        });
+    </script>
 </body>
-
 </html>
