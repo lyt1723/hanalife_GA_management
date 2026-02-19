@@ -34,7 +34,6 @@
     </div>
 
     <script>
-        // 매니저 데이터 (강선경 매니저 업무시간 18:00 복구 완료)
         const managers = [
             { name: "이연택", time: "10:00 ~ 18:00", start: 10, end: 18, id: "zxKd6qDxlPlmA5hprZN010wasVA-", phone: "010-9895-4296" },
             { name: "김용주", time: "09:00 ~ 17:00", start: 9, end: 17, id: "3dIuLgnFeLjoAzoImo8VCIWDMy0-", phone: "010-5165-2902" },
@@ -43,47 +42,17 @@
             { name: "강미현", time: "10:00 ~ 18:00", start: 10, end: 18, id: "urnOrSclAEqAdESlnJkudcBnMWY-", phone: "010-6623-1452" }
         ];
 
-        // [순서 로테이션 로직] 2026-02-19 이연택 설계매니저가 맨 앞(0번 인덱스)
         const today = new Date();
-        today.setHours(0, 0, 0, 0);
-        const baseDate = new Date('2026-02-19').getTime();
-        const diffDays = Math.floor((today.getTime() - baseDate) / (1000 * 60 * 60 * 24));
+        const firstDay = new Date('2026-02-19');
+        const diffDays = Math.floor((today - firstDay) / (86400000));
         
-        // 오늘 기준 shift는 0이 되어 이연택 설계매니저가 그리드 첫 번째에 옵니다.
-        const shift = diffDays % managers.length;
+        let shift = diffDays % managers.length;
+        if (shift < 0) shift += managers.length; 
+
         const rotatedManagers = [...managers.slice(shift), ...managers.slice(0, shift)];
-
         const grid = document.getElementById('manager-grid');
-        const currentHour = new Date().getHours();
+        const currentHour = today.getHours();
         const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-
-        rotatedManagers.forEach(m => {
-            const btn = document.createElement('div');
-            btn.className = 'btn';
-            btn.innerHTML = `<div class="name">${m.name} 설계매니저</div><div class="time">${m.time}</div>`;
-            
-            btn.onclick = () => {
-                // 업무 시간 외 안내 팝업
-                if (currentHour < m.start || currentHour >= m.end) {
-                    alert("긴급한 사안이 아닌 경우 업무시간 내 연락 부탁 드립니다.");
-                }
-
-                if (isMobile) {
-                    // 모바일: 카카오톡 개인 프로필 호출
-                    location.href = `kakaotalk://pgp/profiles/${m.id}`;
-                } else {
-                    // PC: 전화번호 복사 및 커스텀 안내 팝업
-                    copyToClipboard(m.phone);
-                    alert(
-                        `${m.name} 설계매니저의 연락처가 복사 되었습니다.\n` +
-                        `카카오톡에서 친구추가 후 연락 바랍니다.\n\n\n` +
-                        `해당 사이트는 모바일 환경에서 사용하시는 것을 권장 드립니다.`
-                    );
-                    location.href = `kakaotalk://`;
-                }
-            };
-            grid.appendChild(btn);
-        });
 
         function copyToClipboard(val) {
             const t = document.createElement("textarea");
@@ -93,7 +62,27 @@
             document.execCommand('copy');
             document.body.removeChild(t);
         }
+
+        rotatedManagers.forEach(m => {
+            const btn = document.createElement('div');
+            btn.className = 'btn';
+            btn.innerHTML = `<div class="name">${m.name} 설계매니저</div><div class="time">${m.time}</div>`;
+            
+            btn.onclick = () => {
+                if (currentHour < m.start || currentHour >= m.end) {
+                    alert("긴급한 사안이 아닌 경우 업무시간 내 연락 부탁 드립니다.");
+                }
+
+                if (isMobile) {
+                    location.href = `kakaotalk://pgp/profiles/${m.id}`;
+                } else {
+                    copyToClipboard(m.phone);
+                    alert(`${m.name} 설계매니저의 연락처가 복사 되었습니다.\n카카오톡에서 친구추가 후 연락 바랍니다.\n\n\n해당 사이트는 모바일 환경에서 사용하시는 것을 권장 드립니다.`);
+                    location.href = `kakaotalk://`;
+                }
+            };
+            grid.appendChild(btn);
+        });
     </script>
 </body>
 </html>
-
