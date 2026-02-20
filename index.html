@@ -67,7 +67,7 @@ select { padding: 4px; border-radius: 5px; font-size: 0.8rem; }
 const firebaseConfig = {
     apiKey: "AIzaSyBKpPSc7-yiuIcjqDthqgVtCTLsuPDATcA",
     authDomain: "hanalife-ga-management.firebaseapp.com",
-    databaseURL: "hanalife-ga-management.firebaseapp.com",
+    databaseURL: "https://hanalife-ga-management-default-rtdb.firebaseio.com",
     projectId: "hanalife-ga-management",
     storageBucket: "hanalife-ga-management.firebasestorage.app",
     messagingSenderId: "983229714033",
@@ -97,13 +97,11 @@ if (!isMobile) document.getElementById('pc-guide').style.display = 'block';
 
 function checkAdmin() {
     const pw = prompt("관리자 비밀번호를 입력하세요.");
-    if (pw) {
-        if (btoa(pw) === "NTgwMzEx") {
-            sessionStorage.setItem('isAdmin', 'true');
-            location.reload();
-        } else {
-            alert("비밀번호가 틀렸습니다.");
-        }
+    if (pw && btoa(pw) === "NTgwMzEx") {
+        sessionStorage.setItem('isAdmin', 'true');
+        location.reload();
+    } else if(pw) {
+        alert("비밀번호가 틀렸습니다.");
     }
 }
 
@@ -127,9 +125,9 @@ function copyToClipboard(val) {
     document.body.removeChild(t);
 }
 
-db.ref('hana_status').once('value', (snapshot) => {
-    const statusData = snapshot.val() || {};
+function renderGrid(statusData = {}) {
     const grid = document.getElementById('manager-grid');
+    grid.innerHTML = '';
     
     managers.forEach(m => {
         const status = statusData[m.id] || 'active';
@@ -175,6 +173,13 @@ db.ref('hana_status').once('value', (snapshot) => {
         };
         grid.appendChild(btn);
     });
+}
+
+renderGrid();
+
+db.ref('hana_status').on('value', (snapshot) => {
+    const statusData = snapshot.val() || {};
+    renderGrid(statusData);
 });
 </script>
 </body>
