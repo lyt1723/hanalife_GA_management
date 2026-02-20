@@ -67,12 +67,11 @@ select { padding: 4px; border-radius: 5px; font-size: 0.8rem; }
 const firebaseConfig = {
     apiKey: "AIzaSyBKpPSc7-yiuIcjqDthqgVtCTLsuPDATcA",
     authDomain: "hanalife-ga-management.firebaseapp.com",
-    databaseURL: "https://hanalife-ga-management-default-rtdb.firebaseio.com",
+    databaseURL: "https://hanalife-ga-management-default-rtdb.asia-southeast1.firebasedatabase.app",
     projectId: "hanalife-ga-management",
     storageBucket: "hanalife-ga-management.firebasestorage.app",
     messagingSenderId: "983229714033",
-    appId: "1:983229714033:web:a2ae2063e7ac94527ad5d0",
-    measurementId: "G-BRDZ6VL7XW"
+    appId: "1:983229714033:web:a2ae2063e7ac94527ad5d0"
 };
 
 firebase.initializeApp(firebaseConfig);
@@ -95,49 +94,16 @@ const isAdmin = sessionStorage.getItem('isAdmin') === 'true';
 if (isAdmin) document.getElementById('main-container').classList.add('admin-active');
 if (!isMobile) document.getElementById('pc-guide').style.display = 'block';
 
-function checkAdmin() {
-    const pw = prompt("관리자 비밀번호를 입력하세요.");
-    if (pw && btoa(pw) === "NTgwMzEx") {
-        sessionStorage.setItem('isAdmin', 'true');
-        location.reload();
-    } else if(pw) {
-        alert("비밀번호가 틀렸습니다.");
-    }
-}
-
-function logout() {
-    sessionStorage.removeItem('isAdmin');
-    location.reload();
-}
-
-function updateStatus(managerId, status) {
-    db.ref('hana_status/' + managerId).set(status).then(() => {
-        location.reload();
-    });
-}
-
-function copyToClipboard(val) {
-    const t = document.createElement("textarea");
-    document.body.appendChild(t);
-    t.value = val;
-    t.select();
-    document.execCommand('copy');
-    document.body.removeChild(t);
-}
-
 function renderGrid(statusData = {}) {
     const grid = document.getElementById('manager-grid');
     grid.innerHTML = '';
-    
     managers.forEach(m => {
         const status = statusData[m.id] || 'active';
         const btn = document.createElement('div');
         btn.className = `btn ${status !== 'active' ? 'disabled' : ''}`;
-        
         let timeContent = m.time;
         if(status === 'off') timeContent = '<span class="status-badge status-off">휴무</span>';
         if(status === 'edu') timeContent = '<span class="status-badge status-edu">교육 중</span>';
-
         btn.innerHTML = `
             <div class="name">${m.name} 설계매니저</div>
             <div class="time-area">${timeContent}</div>
@@ -149,22 +115,18 @@ function renderGrid(statusData = {}) {
                 </select>
             </div>
         `;
-        
         btn.onclick = () => {
             if (isAdmin) return;
             if (status !== 'active') {
-                const statusText = status === 'off' ? '휴무' : '교육 중';
-                alert(`${statusText}입니다.`);
+                alert(`${status === 'off' ? '휴무' : '교육 중'}입니다.`);
                 return;
             }
             if (currentHour < m.start || currentHour >= m.end) {
                 alert(`${m.name} 설계매니저의 업무시간이 아닙니다.\n긴급한 사항이 아닌 경우 업무시간 내 연락해 주시기 바랍니다.`);
             }
             if (isMobile) {
-                const scheme = `kakaotalk://pgp/profiles/${m.kakaoId}`;
-                const webLink = `https://qr.kakao.com/talk/${m.kakaoId}`;
-                location.href = scheme;
-                setTimeout(() => { if (document.hasFocus()) location.href = webLink; }, 500);
+                location.href = `kakaotalk://pgp/profiles/${m.kakaoId}`;
+                setTimeout(() => { if (document.hasFocus()) location.href = `https://qr.kakao.com/talk/${m.kakaoId}`; }, 500);
             } else {
                 copyToClipboard(m.phone);
                 alert(`${m.name} 설계매니저의 연락처가 복사되었습니다.\n\nPC카톡에서 친구 추가 후 연락 바랍니다.`);
@@ -175,11 +137,32 @@ function renderGrid(statusData = {}) {
     });
 }
 
+function updateStatus(id, val) {
+    db.ref('hana_status/' + id).set(val);
+}
+
+function checkAdmin() {
+    const pw = prompt("관리자 비밀번호를 입력하세요.");
+    if (pw && btoa(pw) === "NTgwMzEx") {
+        sessionStorage.setItem('isAdmin', 'true');
+        location.reload();
+    } else if(pw) { alert("비밀번호가 틀렸습니다."); }
+}
+
+function logout() { sessionStorage.removeItem('isAdmin'); location.reload(); }
+
+function copyToClipboard(val) {
+    const t = document.createElement("textarea");
+    document.body.appendChild(t);
+    t.value = val; t.select();
+    document.execCommand('copy');
+    document.body.removeChild(t);
+}
+
 renderGrid();
 
 db.ref('hana_status').on('value', (snapshot) => {
-    const statusData = snapshot.val() || {};
-    renderGrid(statusData);
+    renderGrid(snapshot.val() || {});
 });
 </script>
 </body>
