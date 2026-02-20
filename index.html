@@ -19,19 +19,18 @@
             background: #fff; border: 2.2px solid var(--hana-teal); color: #222;
             padding: 22px 5px; border-radius: 20px; text-decoration: none;
             transition: all 0.2s ease; box-shadow: 0 4px 10px rgba(0,132,133,0.05);
-            cursor: pointer; position: relative;
+            cursor: pointer; position: relative; min-height: 100px;
         }
 
         .btn.disabled { border-color: #ddd; background: #f9f9f9; color: #aaa; cursor: not-allowed; }
-        .btn.disabled .time { color: #bbb; }
-        .status-badge { font-size: 0.7rem; padding: 2px 8px; border-radius: 10px; margin-bottom: 5px; font-weight: bold; }
+        .status-badge { font-size: 0.75rem; padding: 4px 12px; border-radius: 12px; font-weight: bold; display: inline-block; }
         .status-off { background: #ffeded; color: #ff4d4d; }
         .status-edu { background: #eef2ff; color: #4d7cff; }
 
         .btn:not(.disabled):hover { background: #f9ffff; }
         .btn:not(.disabled):active { background: var(--hana-teal); color: #fff; transform: scale(0.94); }
-        .name { font-size: 1.15rem; font-weight: 800; margin-bottom: 6px; pointer-events: none; white-space: nowrap; }
-        .time { font-size: 0.75rem; color: #777; pointer-events: none; }
+        .name { font-size: 1.15rem; font-weight: 800; margin-bottom: 8px; pointer-events: none; white-space: nowrap; }
+        .time-area { font-size: 0.75rem; color: #777; pointer-events: none; min-height: 1.2rem; display: flex; align-items: center; justify-content: center; }
 
         #admin-lock { position: absolute; top: 15px; right: 20px; font-size: 0.7rem; color: #ddd; cursor: pointer; }
         #admin-panel { display: none; background: #333; color: white; padding: 15px; border-radius: 15px; margin-bottom: 20px; font-size: 0.85rem; }
@@ -63,7 +62,7 @@
         
         <div id="admin-panel">
             <strong>🛠 관리자 모드</strong> | <span onclick="logout()" style="text-decoration: underline; cursor:pointer">로그아웃</span>
-            <p style="margin: 5px 0 0; font-size: 0.75rem; color: #ccc;">매니저별 상태를 변경하면 즉시 저장됩니다.</p>
+            <p style="margin: 5px 0 0; font-size: 0.75rem; color: #ccc;">업무 현황을 변경하면 즉시 반영됩니다.</p>
         </div>
 
         <h1>하나생명 GA 업무지원</h1>
@@ -79,7 +78,7 @@
                 <li>3. 이름 입력 후, 번호칸에 <b>Ctrl + V</b> (붙여넣기)</li>
             </ul>
             <span class="guide-note">※ 매니저 클릭 시 연락처가 자동으로 복사됩니다.<br>
-                💡 <b>모바일</b>로 접속하시면 바로 연결되어 더욱 편리합니다.</span>
+                💡<b>모바일</b>로 접속하시면 바로 연결되어 더욱 편리합니다.</span>
         </div>
 
         <div class="footer">© 하나생명보험</div>
@@ -143,19 +142,18 @@
             const btn = document.createElement('div');
             btn.className = `btn ${status !== 'active' ? 'disabled' : ''}`;
             
-            let badge = '';
-            if(status === 'off') badge = '<span class="status-badge status-off">휴무</span>';
-            if(status === 'edu') badge = '<span class="status-badge status-edu">교육 중</span>';
+            let timeContent = m.time;
+            if(status === 'off') timeContent = '<span class="status-badge status-off">휴무</span>';
+            if(status === 'edu') timeContent = '<span class="status-badge status-edu">교육 중</span>';
 
             btn.innerHTML = `
-                ${badge}
                 <div class="name">${m.name} 설계매니저</div>
-                <div class="time">${m.time}</div>
+                <div class="time-area">${timeContent}</div>
                 <div class="admin-only" onclick="event.stopPropagation()">
                     <select onchange="updateStatus('${m.id}', this.value)">
                         <option value="active" ${status === 'active' ? 'selected' : ''}>정상업무</option>
                         <option value="off" ${status === 'off' ? 'selected' : ''}>휴무</option>
-                        <option value="edu" ${status === 'edu' ? 'selected' : ''}>교육중</option>
+                        <option value="edu" ${status === 'edu' ? 'selected' : ''}>교육 중</option>
                     </select>
                 </div>
             `;
@@ -163,12 +161,12 @@
             btn.onclick = () => {
                 if (isAdmin) return;
                 if (status !== 'active') {
-                    alert(`${m.name} 매니저는 현재 ${status === 'off' ? '휴무' : '교육'} 중입니다.`);
+                    alert(`{status === 'off' ? '휴무' : '교육 중'} 입니다.`);
                     return;
                 }
                 
                 if (currentHour < m.start || currentHour >= m.end) {
-                    alert("업무시간이 종료되었습니다.\n긴급한 사항이 아닌 경우 업무시간 내 연락해 주시기 바랍니다.");
+                    alert("해당 설계매니저는 업무가 종료되었습니다.\n긴급한 사항이 아닌 경우 업무시간 내 연락해 주시기 바랍니다.");
                 }
 
                 if (isMobile) {
@@ -178,7 +176,7 @@
                     setTimeout(() => { if (document.hasFocus()) location.href = webLink; }, 500);
                 } else {
                     copyToClipboard(m.phone);
-                    alert(`${m.name} 매니저의 연락처가 복사되었습니다.\n\nPC카톡에서 친구 추가 후 연락 바랍니다.`);
+                    alert(`${m.name} 설계매니저의 연락처가 복사되었습니다.\n\nPC카톡에서 친구 추가 후 연락 바랍니다.`);
                     location.href = `kakaotalk://`;
                 }
             };
