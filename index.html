@@ -161,9 +161,9 @@
             btn.onclick = () => {
                 if (isAdmin) return;
                 if (status !== 'active') {
-                    alert(`{status === 'off' ? '휴무' : '교육 중'} 입니다.`);
-                    return;
-                }
+    alert(`${status === 'off' ? '휴무' : '교육 중'} 중입니다.`);
+    return;
+}
                 
                 if (currentHour < m.start || currentHour >= m.end) {
                     alert("해당 설계매니저는 업무가 종료되었습니다.\n긴급한 사항이 아닌 경우 업무시간 내 연락해 주시기 바랍니다.");
@@ -185,3 +185,4 @@
     </script>
 </body>
 </html>
+
