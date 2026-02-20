@@ -1,189 +1,193 @@
 <!DOCTYPE html>
+
 <html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>하나생명 GA 업무지원</title>
-    <style>
-        :root { --hana-teal: #008485; --disabled-gray: #ccc; }
-        body { font-family: 'Malgun Gothic', 'Apple SD Gothic Neo', sans-serif; background-color: #f2f5f5; margin: 0; display: flex; flex-direction: column; align-items: center; padding: 20px; }
-        .container { width: 100%; max-width: 500px; text-align: center; background: white; padding: 45px 15px; border-radius: 30px; box-shadow: 0 15px 35px rgba(0,0,0,0.1); margin-top: 20px; box-sizing: border-box; position: relative; }
-        
-        h1 { color: #111; font-size: 2.5rem; font-weight: 900; margin-bottom: 12px; letter-spacing: -1.2px; white-space: nowrap; word-break: keep-all; line-height: 1.2; }
-        .sub-title { color: var(--hana-teal); font-size: 0.9rem; font-weight: bold; margin-bottom: 35px; opacity: 0.9; line-height: 1.5; }
-        .sub-title br { display: none; }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>하나생명 GA 업무지원</title>
+<style>
+:root { --hana-teal: #008485; --disabled-gray: #ccc; }
+body { font-family: 'Malgun Gothic', 'Apple SD Gothic Neo', sans-serif; background-color: #f2f5f5; margin: 0; display: flex; flex-direction: column; align-items: center; padding: 20px; }
+.container { width: 100%; max-width: 500px; text-align: center; background: white; padding: 45px 15px; border-radius: 30px; box-shadow: 0 15px 35px rgba(0,0,0,0.1); margin-top: 20px; box-sizing: border-box; position: relative; }
 
-        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; } 
-        .btn { 
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            background: #fff; border: 2.2px solid var(--hana-teal); color: #222;
-            padding: 22px 5px; border-radius: 20px; text-decoration: none;
-            transition: all 0.2s ease; box-shadow: 0 4px 10px rgba(0,132,133,0.05);
-            cursor: pointer; position: relative; min-height: 100px;
-        }
+    h1 { color: #111; font-size: 2.5rem; font-weight: 900; margin-bottom: 12px; letter-spacing: -1.2px; white-space: nowrap; word-break: keep-all; line-height: 1.2; }
+    .sub-title { color: var(--hana-teal); font-size: 0.9rem; font-weight: bold; margin-bottom: 35px; opacity: 0.9; line-height: 1.5; }
+    .sub-title br { display: none; }
 
-        .btn.disabled { border-color: #ddd; background: #f9f9f9; color: #aaa; cursor: not-allowed; }
-        .status-badge { font-size: 0.75rem; padding: 4px 12px; border-radius: 12px; font-weight: bold; display: inline-block; }
-        .status-off { background: #ffeded; color: #ff4d4d; }
-        .status-edu { background: #eef2ff; color: #4d7cff; }
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; } 
+    .btn { 
+        display: flex; flex-direction: column; align-items: center; justify-content: center;
+        background: #fff; border: 2.2px solid var(--hana-teal); color: #222;
+        padding: 22px 5px; border-radius: 20px; text-decoration: none;
+        transition: all 0.2s ease; box-shadow: 0 4px 10px rgba(0,132,133,0.05);
+        cursor: pointer; position: relative; min-height: 100px;
+    }
 
-        .btn:not(.disabled):hover { background: #f9ffff; }
-        .btn:not(.disabled):active { background: var(--hana-teal); color: #fff; transform: scale(0.94); }
-        .name { font-size: 1.15rem; font-weight: 800; margin-bottom: 8px; pointer-events: none; white-space: nowrap; }
-        .time-area { font-size: 0.75rem; color: #777; pointer-events: none; min-height: 1.2rem; display: flex; align-items: center; justify-content: center; }
+    .btn.disabled { border-color: #ddd; background: #f9f9f9; color: #aaa; cursor: not-allowed; }
+    .status-badge { font-size: 0.75rem; padding: 4px 12px; border-radius: 12px; font-weight: bold; display: inline-block; }
+    .status-off { background: #ffeded; color: #ff4d4d; }
+    .status-edu { background: #eef2ff; color: #4d7cff; }
 
-        #admin-lock { position: absolute; top: 15px; right: 20px; font-size: 0.7rem; color: #ddd; cursor: pointer; }
-        #admin-panel { display: none; background: #333; color: white; padding: 15px; border-radius: 15px; margin-bottom: 20px; font-size: 0.85rem; }
-        .admin-active #admin-panel { display: block; }
-        .admin-active .admin-only { display: block; }
-        .admin-only { display: none; margin-top: 8px; }
-        select { padding: 4px; border-radius: 5px; font-size: 0.8rem; }
+    .btn:not(.disabled):hover { background: #f9ffff; }
+    .btn:not(.disabled):active { background: var(--hana-teal); color: #fff; transform: scale(0.94); }
+    .name { font-size: 1.15rem; font-weight: 800; margin-bottom: 8px; pointer-events: none; white-space: nowrap; }
+    .time-area { font-size: 0.75rem; color: #777; pointer-events: none; min-height: 1.2rem; display: flex; align-items: center; justify-content: center; }
 
-        #pc-guide { display: none; margin-top: 40px; padding: 20px; background-color: #f9fbfb; border-radius: 20px; border: 1px dashed var(--hana-teal); text-align: left; }
-        .guide-title { font-size: 0.95rem; font-weight: 800; color: var(--hana-teal); margin-bottom: 10px; display: block; }
-        .guide-text { font-size: 0.82rem; color: #555; line-height: 1.7; margin: 0; padding: 0; list-style: none; }
-        .guide-text li { margin-bottom: 4px; position: relative; padding-left: 15px; }
-        .guide-text li::before { content: '•'; position: absolute; left: 0; color: var(--hana-teal); }
-        .guide-note { font-size: 0.75rem; color: #999; margin-top: 12px; display: block; border-top: 1px dotted #eee; padding-top: 10px; }
-        .footer { margin-top: 30px; font-size: 0.8rem; color: #ccc; font-weight: bold; }
+    #admin-lock { position: absolute; top: 15px; right: 20px; font-size: 0.7rem; color: #ddd; cursor: pointer; }
+    #admin-panel { display: none; background: #333; color: white; padding: 15px; border-radius: 15px; margin-bottom: 20px; font-size: 0.85rem; }
+    .admin-active #admin-panel { display: block; }
+    .admin-active .admin-only { display: block; }
+    .admin-only { display: none; margin-top: 8px; }
+    select { padding: 4px; border-radius: 5px; font-size: 0.8rem; }
 
-        @media screen and (max-width: 480px) {
-            h1 { font-size: 1.8rem; }
-            .sub-title { font-size: 0.85rem; }
-            .sub-title br { display: block; }
-            .name { font-size: 0.95rem; }
-            .container { padding: 35px 20px; }
-        }
-    </style>
+    #pc-guide { display: none; margin-top: 40px; padding: 20px; background-color: #f9fbfb; border-radius: 20px; border: 1px dashed var(--hana-teal); text-align: left; }
+    .guide-title { font-size: 0.95rem; font-weight: 800; color: var(--hana-teal); margin-bottom: 10px; display: block; }
+    .guide-text { font-size: 0.82rem; color: #555; line-height: 1.7; margin: 0; padding: 0; list-style: none; }
+    .guide-text li { margin-bottom: 4px; position: relative; padding-left: 15px; }
+    .guide-text li::before { content: '•'; position: absolute; left: 0; color: var(--hana-teal); }
+    .guide-note { font-size: 0.75rem; color: #999; margin-top: 12px; display: block; border-top: 1px dotted #eee; padding-top: 10px; }
+    .footer { margin-top: 30px; font-size: 0.8rem; color: #ccc; font-weight: bold; }
+
+    @media screen and (max-width: 480px) {
+        h1 { font-size: 1.8rem; }
+        .sub-title { font-size: 0.85rem; }
+        .sub-title br { display: block; }
+        .name { font-size: 0.95rem; }
+        .container { padding: 35px 20px; }
+        .grid { gap: 10px; }
+        .btn { padding: 18px 5px; min-height: 90px; }
+        .status-badge { font-size: 0.7rem; padding: 3px 10px; }
+    }
+</style>
 </head>
 <body>
-    <div class="container" id="main-container">
-        <div id="admin-lock" onclick="checkAdmin()">Admin</div>
-        
-        <div id="admin-panel">
-            <strong>🛠 관리자 모드</strong> | <span onclick="logout()" style="text-decoration: underline; cursor:pointer">로그아웃</span>
-            <p style="margin: 5px 0 0; font-size: 0.75rem; color: #ccc;">업무 현황을 변경하면 즉시 반영됩니다.</p>
-        </div>
+<div class="container" id="main-container">
+<div id="admin-lock" onclick="checkAdmin()">Admin</div>
 
-        <h1>하나생명 GA 업무지원</h1>
-        <div class="sub-title">설계매니저를 선택하시면 <br>카카오톡으로 연결됩니다.</div>
-        
-        <div id="manager-grid" class="grid"></div>
-
-        <div id="pc-guide">
-            <span class="guide-title">✅ PC 카카오톡 친구 추가 방법</span>
-            <ul class="guide-text">
-                <li>1. 실행된 PC카톡에서 <b>우측 상단의 [친구 추가]</b> 아이콘 클릭</li>
-                <li>2. <b>[연락처로 추가]</b> 메뉴 선택</li>
-                <li>3. 이름 입력 후, 번호칸에 <b>Ctrl + V</b> (붙여넣기)</li>
-            </ul>
-            <span class="guide-note">※ 매니저 클릭 시 연락처가 자동으로 복사됩니다.<br>
-                💡<b>모바일</b>로 접속하시면 바로 연결되어 더욱 편리합니다.</span>
-        </div>
-
-        <div class="footer">© 하나생명보험</div>
+    <div id="admin-panel">
+        <strong>🛠 관리자 모드</strong> | <span onclick="logout()" style="text-decoration: underline; cursor:pointer">로그아웃</span>
+        <p style="margin: 5px 0 0; font-size: 0.75rem; color: #ccc;">업무 현황을 변경하면 즉시 반영됩니다.</p>
     </div>
 
-    <script>
-        const managers = [
-            { id: "m1", name: "이연택", time: "10:00 ~ 18:00", start: 10, end: 18, kakaoId: "zxKd6qDxlPlmA5hprZN010wasVA-", phone: "010-9895-4296" },
-            { id: "m2", name: "강미현", time: "10:00 ~ 18:00", start: 10, end: 18, kakaoId: "urnOrSclAEqAdESlnJkudcBnMWY-", phone: "010-6623-1452" },
-            { id: "m3", name: "김용주", time: "09:00 ~ 17:00", start: 9, end: 17, kakaoId: "3dIuLgnFeLjoAzoImo8VCIWDMy0-", phone: "010-5165-2902" },
-            { id: "m4", name: "박승현", time: "09:00 ~ 17:00", start: 9, end: 17, kakaoId: "8pDewe41mTL.qIhVl5lRneev1jE-", phone: "010-4388-7296" },
-            { id: "m5", name: "정혜정", time: "10:00 ~ 18:00", start: 10, end: 18, kakaoId: "qC1IJnDQyg3LmR5Fqsu3cQy4bOI-", phone: "010-4648-5367" },
-            { id: "m6", name: "강선경", time: "10:00 ~ 18:00", start: 10, end: 18, kakaoId: "6oZRL_zBr8P_g0OrZ8TDuEX7w2I-", phone: "010-4360-5454" }
-        ];
+    <h1>하나생명 GA 업무지원</h1>
+    <div class="sub-title">설계매니저를 선택하시면 <br>카카오톡으로 연결됩니다.</div>
+    
+    <div id="manager-grid" class="grid"></div>
 
-        let statusData = JSON.parse(localStorage.getItem('hana_manager_status')) || {};
-        const today = new Date();
-        const currentHour = today.getHours();
-        const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-        const isAdmin = sessionStorage.getItem('isAdmin') === 'true';
+    <div id="pc-guide">
+        <span class="guide-title">✅ PC 카카오톡 친구 추가 방법</span>
+        <ul class="guide-text">
+            <li>1. 실행된 PC카톡에서 <b>우측 상단의 [친구 추가]</b> 아이콘 클릭</li>
+            <li>2. <b>[연락처로 추가]</b> 메뉴 선택</li>
+            <li>3. 이름 입력 후, 번호칸에 <b>Ctrl + V</b> (붙여넣기)</li>
+        </ul>
+        <span class="guide-note">※ 매니저 클릭 시 연락처가 자동으로 복사됩니다.<br>
+            💡<b>모바일</b>로 접속하시면 바로 연결되어 더욱 편리합니다.</span>
+    </div>
 
-        if (isAdmin) document.getElementById('main-container').classList.add('admin-active');
-        if (!isMobile) document.getElementById('pc-guide').style.display = 'block';
+    <div class="footer">© 하나생명보험</div>
+</div>
 
-        function checkAdmin() {
-            const pw = prompt("관리자 비밀번호를 입력하세요.");
-            if (pw) {
-                if (btoa(pw) === "NTgwMzEx") {
-                    sessionStorage.setItem('isAdmin', 'true');
-                    location.reload();
-                } else {
-                    alert("비밀번호가 틀렸습니다.");
-                }
+<script>
+    const managers = [
+        { id: "m1", name: "이연택", time: "10:00 ~ 18:00", start: 10, end: 18, kakaoId: "zxKd6qDxlPlmA5hprZN010wasVA-", phone: "010-9895-4296" },
+        { id: "m2", name: "강미현", time: "10:00 ~ 18:00", start: 10, end: 18, kakaoId: "urnOrSclAEqAdESlnJkudcBnMWY-", phone: "010-6623-1452" },
+        { id: "m3", name: "김용주", time: "09:00 ~ 17:00", start: 9, end: 17, kakaoId: "3dIuLgnFeLjoAzoImo8VCIWDMy0-", phone: "010-5165-2902" },
+        { id: "m4", name: "박승현", time: "09:00 ~ 17:00", start: 9, end: 17, kakaoId: "8pDewe41mTL.qIhVl5lRneev1jE-", phone: "010-4388-7296" },
+        { id: "m5", name: "정혜정", time: "10:00 ~ 18:00", start: 10, end: 18, kakaoId: "qC1IJnDQyg3LmR5Fqsu3cQy4bOI-", phone: "010-4648-5367" },
+        { id: "m6", name: "강선경", time: "10:00 ~ 18:00", start: 10, end: 18, kakaoId: "6oZRL_zBr8P_g0OrZ8TDuEX7w2I-", phone: "010-4360-5454" }
+    ];
+
+    let statusData = JSON.parse(localStorage.getItem('hana_manager_status')) || {};
+    const today = new Date();
+    const currentHour = today.getHours();
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+    const isAdmin = sessionStorage.getItem('isAdmin') === 'true';
+
+    if (isAdmin) document.getElementById('main-container').classList.add('admin-active');
+    if (!isMobile) document.getElementById('pc-guide').style.display = 'block';
+
+    function checkAdmin() {
+        const pw = prompt("관리자 비밀번호를 입력하세요.");
+        if (pw) {
+            if (btoa(pw) === "NTgwMzEx") {
+                sessionStorage.setItem('isAdmin', 'true');
+                location.reload();
+            } else {
+                alert("비밀번호가 틀렸습니다.");
             }
         }
+    }
 
-        function logout() {
-            sessionStorage.removeItem('isAdmin');
-            location.reload();
-        }
+    function logout() {
+        sessionStorage.removeItem('isAdmin');
+        location.reload();
+    }
 
-        function updateStatus(managerId, status) {
-            statusData[managerId] = status;
-            localStorage.setItem('hana_manager_status', JSON.stringify(statusData));
-            location.reload();
-        }
+    function updateStatus(managerId, status) {
+        statusData[managerId] = status;
+        localStorage.setItem('hana_manager_status', JSON.stringify(statusData));
+        location.reload();
+    }
 
-        function copyToClipboard(val) {
-            const t = document.createElement("textarea");
-            document.body.appendChild(t);
-            t.value = val;
-            t.select();
-            document.execCommand('copy');
-            document.body.removeChild(t);
-        }
+    function copyToClipboard(val) {
+        const t = document.createElement("textarea");
+        document.body.appendChild(t);
+        t.value = val;
+        t.select();
+        document.execCommand('copy');
+        document.body.removeChild(t);
+    }
 
-        const grid = document.getElementById('manager-grid');
+    const grid = document.getElementById('manager-grid');
 
-        managers.forEach(m => {
-            const status = statusData[m.id] || 'active';
-            const btn = document.createElement('div');
-            btn.className = `btn ${status !== 'active' ? 'disabled' : ''}`;
+    managers.forEach(m => {
+        const status = statusData[m.id] || 'active';
+        const btn = document.createElement('div');
+        btn.className = `btn ${status !== 'active' ? 'disabled' : ''}`;
+        
+        let timeContent = m.time;
+        if(status === 'off') timeContent = '<span class="status-badge status-off">휴무</span>';
+        if(status === 'edu') timeContent = '<span class="status-badge status-edu">교육 중</span>';
+
+        btn.innerHTML = `
+            <div class="name">${m.name} 설계매니저</div>
+            <div class="time-area">${timeContent}</div>
+            <div class="admin-only" onclick="event.stopPropagation()">
+                <select onchange="updateStatus('${m.id}', this.value)">
+                    <option value="active" ${status === 'active' ? 'selected' : ''}>정상업무</option>
+                    <option value="off" ${status === 'off' ? 'selected' : ''}>휴무</option>
+                    <option value="edu" ${status === 'edu' ? 'selected' : ''}>교육 중</option>
+                </select>
+            </div>
+        `;
+        
+        btn.onclick = () => {
+            if (isAdmin) return;
             
-            let timeContent = m.time;
-            if(status === 'off') timeContent = '<span class="status-badge status-off">휴무</span>';
-            if(status === 'edu') timeContent = '<span class="status-badge status-edu">교육 중</span>';
-
-            btn.innerHTML = `
-                <div class="name">${m.name} 설계매니저</div>
-                <div class="time-area">${timeContent}</div>
-                <div class="admin-only" onclick="event.stopPropagation()">
-                    <select onchange="updateStatus('${m.id}', this.value)">
-                        <option value="active" ${status === 'active' ? 'selected' : ''}>정상업무</option>
-                        <option value="off" ${status === 'off' ? 'selected' : ''}>휴무</option>
-                        <option value="edu" ${status === 'edu' ? 'selected' : ''}>교육 중</option>
-                    </select>
-                </div>
-            `;
+            if (status !== 'active') {
+                const statusText = status === 'off' ? '휴무' : '교육 중';
+                alert(`${statusText}입니다.`);
+                return;
+            }
             
-            btn.onclick = () => {
-                if (isAdmin) return;
-                if (status !== 'active') {
-    alert(`${status === 'off' ? '휴무' : '교육 중 '}입니다.`);
-    return;
-}
-                
-                if (currentHour < m.start || currentHour >= m.end) {
-                    alert("해당 설계매니저는 업무가 종료되었습니다.\n긴급한 사항이 아닌 경우 업무시간 내 연락해 주시기 바랍니다.");
-                }
+            if (currentHour < m.start || currentHour >= m.end) {
+                alert(`${m.name} 설계매니저의 업무시간이 아닙니다.\n긴급한 사항이 아닌 경우 업무시간 내 연락해 주시기 바랍니다.`);
+            }
 
-                if (isMobile) {
-                    const scheme = `kakaotalk://pgp/profiles/${m.kakaoId}`;
-                    const webLink = `https://qr.kakao.com/talk/${m.kakaoId}`;
-                    location.href = scheme;
-                    setTimeout(() => { if (document.hasFocus()) location.href = webLink; }, 500);
-                } else {
-                    copyToClipboard(m.phone);
-                    alert(`${m.name} 설계매니저의 연락처가 복사되었습니다.\n\nPC카톡에서 친구 추가 후 연락 바랍니다.`);
-                    location.href = `kakaotalk://`;
-                }
-            };
-            grid.appendChild(btn);
-        });
-    </script>
+            if (isMobile) {
+                const scheme = `kakaotalk://pgp/profiles/${m.kakaoId}`;
+                const webLink = `https://qr.kakao.com/talk/${m.kakaoId}`;
+                location.href = scheme;
+                setTimeout(() => { if (document.hasFocus()) location.href = webLink; }, 500);
+            } else {
+                copyToClipboard(m.phone);
+                alert(`${m.name} 설계매니저의 연락처가 복사되었습니다.\n\nPC카톡에서 친구 추가 후 연락 바랍니다.`);
+                location.href = `kakaotalk://`;
+            }
+        };
+        grid.appendChild(btn);
+    });
+</script>
 </body>
 </html>
-
-
