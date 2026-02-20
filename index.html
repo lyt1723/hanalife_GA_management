@@ -104,20 +104,10 @@
         if (isAdmin) document.getElementById('main-container').classList.add('admin-active');
         if (!isMobile) document.getElementById('pc-guide').style.display = 'block';
 
-        async function hashPassword(str) {
-            const encoder = new TextEncoder();
-            const data = encoder.encode(str);
-            const hashBuffer = await crypto.subtle.digest('SHA-256', data);
-            const hashArray = Array.from(new Uint8Array(hashBuffer));
-            return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-        }
-
-        async function checkAdmin() {
+        function checkAdmin() {
             const pw = prompt("관리자 비밀번호를 입력하세요.");
             if (pw) {
-                const hashed = await hashPassword(pw);
-                const targetHash = "e87f71128c79c882d24467d3547f42c1143818e3a241e176313768f773410657"; 
-                if (hashed === targetHash) {
+                if (btoa(pw) === "NTgwMzEx") {
                     sessionStorage.setItem('isAdmin', 'true');
                     location.reload();
                 } else {
