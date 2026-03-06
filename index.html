@@ -88,6 +88,10 @@ const managers = [
 
 const today = new Date();
 const currentHour = today.getHours();
+const totalDays = Math.floor(today.getTime() / (1000 * 60 * 60 * 24));
+const rotationIndex = totalDays % managers.length;
+const rotatedManagers = [...managers.slice(rotationIndex), ...managers.slice(0, rotationIndex)];
+
 const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
 const isAdmin = sessionStorage.getItem('isAdmin') === 'true';
 
@@ -97,7 +101,7 @@ if (!isMobile) document.getElementById('pc-guide').style.display = 'block';
 function renderGrid(statusData = {}) {
     const grid = document.getElementById('manager-grid');
     grid.innerHTML = '';
-    managers.forEach(m => {
+    rotatedManagers.forEach(m => {
         const status = statusData[m.id] || 'active';
         const btn = document.createElement('div');
         btn.className = `btn ${status !== 'active' ? 'disabled' : ''}`;
@@ -117,21 +121,36 @@ function renderGrid(statusData = {}) {
         `;
         btn.onclick = () => {
             if (isAdmin) return;
-            if (status !== 'active') {
-                alert(`${status === 'off' ? '휴무' : '교육 중'}입니다.`);
-                return;
-            }
-            if (currentHour < m.start || currentHour >= m.end) {
-                alert(`${m.name} 설계매니저의 업무시간이 아닙니다.\n긴급한 사항이 아닌 경우 업무시간 내 연락해 주시기 바랍니다.`);
-            }
-            if (isMobile) {
-                location.href = `kakaotalk://pgp/profiles/${m.kakaoId}`;
-                setTimeout(() => { if (document.hasFocus()) location.href = `https://qr.kakao.com/talk/${m.kakaoId}`; }, 500);
-            } else {
-                copyToClipboard(m.phone);
-                alert(`${m.name} 설계매니저의 연락처가 복사되었습니다.\n\nPC카톡에서 친구 추가 후 연락 바랍니다.`);
-                location.href = `kakaotalk://`;
-            }
+            const now = new Date();
+            const currentHour = now.getHours();
+            const todayStr = now.toLocaleDateString('en-CA');
+            const dayOfWeek = now.getDay();
+            const FIXED_HOLIDAYS = ["2025-01-01", "2025-01-28", "2025-01-29", "2025-01-30", "2025-03-01", "2025-03-03", "2025-05-05", "2025-05-06", "2025-06-06", "2025-08-15", "2026-01-01", "2026-02-16", "2026-02-17", "2026-02-18", "2026-03-01", "2026-03-02", "2026-05-05", "2026-05-25", "2026-06-03", "2026-06-06", "2026-08-15", "2026-08-17", "2026-09-24", "2026-09-25", "2026-09-26", "2026-10-03", "2026-10-05", "2026-10-09", "2026-12-25"];
+
+            db.ref('hana_team_events').once('value', (snapshot) => {
+                const events = snapshot.val() || {};
+                const isHolidayInDB = Object.values(events).some(ev => 
+                    (ev.start && ev.start.substring(0, 10) === todayStr) && 
+                    (ev.isHoliday === true || ev.display === 'background')
+                );
+                const isRestDay = FIXED_HOLIDAYS.includes(todayStr) || isHolidayInDB || (dayOfWeek === 0 || dayOfWeek === 6);
+
+                if (status !== 'active') {
+                    alert(`${status === 'off' ? '휴무' : '교육 중'}입니다.`);
+                    return;
+                }
+                if (isRestDay || currentHour < m.start || currentHour >= m.end) {
+                    alert(`${m.name} 설계매니저의 업무시간이 아닙니다.\n긴급한 사항이 아닌 경우 평일 업무시간 내 연락해 주시기 바랍니다.`);
+                }
+                if (isMobile) {
+                    location.href = `kakaotalk://pgp/profiles/${m.kakaoId}`;
+                    setTimeout(() => { if (document.hasFocus()) location.href = `https://qr.kakao.com/talk/${m.kakaoId}`; }, 500);
+                } else {
+                    copyToClipboard(m.phone);
+                    alert(`${m.name} 설계매니저의 연락처가 복사되었습니다.\n\nPC카톡에서 친구 추가 후 연락 바랍니다.`);
+                    location.href = `kakaotalk://`;
+                }
+            });
         };
         grid.appendChild(btn);
     });
@@ -161,8 +180,25 @@ function copyToClipboard(val) {
 
 renderGrid();
 
-db.ref('hana_status').on('value', (snapshot) => {
-    renderGrid(snapshot.val() || {});
+db.ref('hana_status').on('value', (statusSnapshot) => {
+    const adminStatus = statusSnapshot.val() || {};
+    const todayStr = new Date().toLocaleDateString('en-CA');
+    db.ref('hana_team_events').once('value', (eventSnapshot) => {
+        const events = eventSnapshot.val() || {};
+        const mergedStatus = { ...adminStatus };
+        Object.values(events).forEach(ev => {
+            const isToday = ev.start && ev.start.substring(0, 10) === todayStr;
+            const isLeave = ['연차', '반차', '여름휴가', '휴가'].some(k => (ev.title && ev.title.includes(k)));
+            if (isToday && isLeave) {
+                managers.forEach(m => {
+                    if (ev.title.includes(m.name)) {
+                        mergedStatus[m.id] = 'off';
+                    }
+                });
+            }
+        });
+        renderGrid(mergedStatus);
+    });
 });
 </script>
 </body>
