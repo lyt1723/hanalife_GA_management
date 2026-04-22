@@ -178,20 +178,23 @@ function copyToClipboard(val) {
     document.body.removeChild(t);
 }
 
+
 renderGrid();
 
 db.ref('hana_status').：('value', (statusSnapshot) => {
     const adminStatus = statusSnapshot.val() || {};
     const todayStr = new Date().toLocaleDateString('en-CA');
+    
     db.ref('hana_team_events').once('value', (eventSnapshot) => {
         const events = eventSnapshot.val() || {};
         const mergedStatus = { ...adminStatus };
+        
         Object.values(events).forEach(ev => {
             const isToday = ev.start && ev.start.substring(0, 10) === todayStr;
             const isLeave = ['연차', '반차', '여름휴가', '휴가'].some(k => (ev.title && ev.title.includes(k)));
             if (isToday && isLeave) {
                 managers.forEach(m => {
-                    if (ev.title.includes(m.name)) {
+                    if (ev.title && ev.title.includes(m.name)) {
                         mergedStatus[m.id] = 'off';
                     }
                 });
